@@ -1,0 +1,9 @@
+package com.travelapp.customize.controller;
+import com.travelapp.common.ApiResponse; import com.travelapp.customize.dto.*; import com.travelapp.customize.service.CustomizeService; import com.travelapp.security.CurrentUserProvider; import jakarta.validation.Valid; import lombok.RequiredArgsConstructor; import org.springframework.web.bind.annotation.*;
+@RestController @RequestMapping("/api/v1/customize") @RequiredArgsConstructor public class CustomizeController { private final CustomizeService service; private final CurrentUserProvider users;
+ @GetMapping("/questions") public ApiResponse<?> questions(){return ApiResponse.success(service.questions());}
+ @PostMapping("/sessions") public ApiResponse<SessionResponseDTO> create(@RequestBody(required=false) CreateSessionDTO r){return ApiResponse.success(service.create(users.getUserIdOrNull(),r==null?new CreateSessionDTO():r));}
+ @GetMapping("/sessions/{id}") public ApiResponse<SessionResponseDTO> get(@PathVariable Long id,@RequestHeader(value="X-Session-Token",required=false)String t){return ApiResponse.success(service.get(users.getUserIdOrNull(),id,t));}
+ @PatchMapping("/sessions/{id}/answers") public ApiResponse<SessionResponseDTO> save(@PathVariable Long id,@RequestHeader(value="X-Session-Token",required=false)String t,@Valid @RequestBody SaveAnswersDTO r){return ApiResponse.success(service.save(users.getUserIdOrNull(),id,t,r));}
+ @PostMapping("/sessions/{id}/complete") public ApiResponse<CompleteResponseDTO> complete(@PathVariable Long id,@RequestHeader(value="X-Session-Token",required=false)String t){return ApiResponse.success(service.complete(users.requireUserId(),id,t));}
+ @PostMapping("/sessions/{id}/bind") public ApiResponse<SessionResponseDTO> bind(@PathVariable Long id,@RequestHeader(value="X-Session-Token",required=false)String t){return ApiResponse.success(service.bind(users.requireUserId(),id,t));}}

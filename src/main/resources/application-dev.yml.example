@@ -1,0 +1,30 @@
+# Real connection info for the local development environment, referenced by the ${app.xxx} placeholders in application.yml.
+# Copy this file to application-dev.yml and fill in your own password — application-dev.yml is already in .gitignore,
+# so it won't be committed to the repo.
+app:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host: localhost
+    port: 3306
+    database: travel_app
+    username: root
+    password: CHANGE_ME
+
+  redis:
+    host: localhost
+    port: 6379
+    database: 9
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+  ai:
+    gemini:
+      api-key: CHANGE_ME_GEMINI_API_KEY # Apply for free at https://aistudio.google.com/apikey
+
+  map:
+    amap:
+      key: CHANGE_ME_AMAP_KEY # Apply for a Web Service key (not a Web JS API key) in the console at https://lbs.amap.com

@@ -1,0 +1,1 @@
+package com.travelapp.customize.mapper; import com.baomidou.mybatisplus.core.mapper.BaseMapper; import com.travelapp.customize.entity.CustomizeSession; public interface CustomizeSessionMapper extends BaseMapper<CustomizeSession> {}

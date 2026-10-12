@@ -1,0 +1,25 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### macOS ###
+.DS_Store
+
+### Logs ###
+*.log
+
+### Env ###
+.env
+
+### Local dev secrets (DB password etc.) — see application-dev.yml.example ###
+src/main/resources/application-dev.yml
+
+### Uploaded files (local disk storage, see FileStorageService) ###
+uploads/

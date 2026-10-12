@@ -1,0 +1,97 @@
+spring:
+  application:
+    name: travel-app-backend
+
+  profiles:
+    active: dev
+
+  datasource:
+    driver-class-name: ${app.datasource.driver-class-name}
+    url: jdbc:mysql://${app.datasource.host}:${app.datasource.port}/${app.datasource.database}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: ${app.datasource.username}
+    password: ${app.datasource.password}
+
+  data:
+    redis:
+      host: ${app.redis.host}
+      port: ${app.redis.port}
+      database: ${app.redis.database}
+
+  rabbitmq:
+    host: ${app.rabbitmq.host}
+    port: ${app.rabbitmq.port}
+    username: ${app.rabbitmq.username}
+    password: ${app.rabbitmq.password}
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+  # Spring AI integration with Google Gemini (Gemini Developer API, free API key mode, not Vertex AI).
+  # If api-key is blank, the underlying SDK will error out when actually invoked — we don't rely on
+  # that error here. GeminiItineraryPlanner checks app.ai.gemini.enabled + whether api-key is blank
+  # before calling; if blank/disabled, it falls straight back to the rule engine.
+  ai:
+    google:
+      genai:
+        api-key: ${app.ai.gemini.api-key:}
+        chat:
+          options: # Spring AI 1.1 reads model/temperature from chat.options.*; chat.model is silently ignored
+            model: ${app.ai.gemini.model:gemini-3.8-flash}
+            temperature: 0.7
+
+# The schema is created manually from db/schema.sql; MyBatis-Plus does not auto-create/alter tables
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # Print SQL in local development for easier debugging
+  global-config:
+    db-config:
+      id-type: auto
+
+server:
+  port: 8080
+
+# JWT-related configuration, corresponding to section 1.2 of the API docs
+app:
+  jwt:
+    secret: CHANGE_ME_TO_A_LONG_RANDOM_SECRET_IN_PROD # TODO: make sure to replace with a random secret in production, don't hardcode it in the config file
+    access-token-expire-seconds: 7200   # 2 hours
+    refresh-token-expire-seconds: 604800 # 7 days
+  upload:
+    dir: uploads
+    base-url: http://localhost:8080
+  # AI switch for the itinerary generation engine. When api-key (configured in application-{profile}.yml)
+  # is blank or enabled=false, the generation engine automatically falls back to the rule engine, with no impact on normal usage.
+  ai:
+    gemini:
+      enabled: true
+      model: gemini-3.8-flash
+  # AMap Web Service API, used to backfill/cache POI data in real time during itinerary generation.
+  # When key (configured in application-{profile}.yml) is blank or enabled=false, existing local pois table data is used exclusively, with no impact on normal usage.
+  map:
+    amap:
+      enabled: true
+      min-poi-per-type: 6 # When the local POI count for a destination/category falls below this value, triggers a live AMap fetch to backfill
+  # The real connection info for datasource/redis/rabbitmq/third-party API keys is not written here,
+  # it goes in application-{profile}.yml (application-dev.yml for local development);
+  # the spring.datasource / spring.data.redis / spring.rabbitmq / spring.ai.google.genai settings above use ${app.xxx} to reference the values there.
+  # This way this file can be safely committed to the repo without leaking passwords/internal addresses/API keys.
+
+# API docs access path: http://localhost:8080/doc.html (knife4j page)
+# springdoc generates the OpenAPI description data behind the scenes, knife4j renders it into this nicer-looking page
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+
+knife4j:
+  enable: true
+  setting:
+    language: en
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

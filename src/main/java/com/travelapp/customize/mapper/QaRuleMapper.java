@@ -1,0 +1,1 @@
+package com.travelapp.customize.mapper; import com.baomidou.mybatisplus.core.mapper.BaseMapper; import com.travelapp.customize.entity.QaRule; public interface QaRuleMapper extends BaseMapper<QaRule> {}

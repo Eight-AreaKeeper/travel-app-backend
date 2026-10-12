@@ -1,0 +1,3 @@
+package com.travelapp.customize.entity;
+import com.baomidou.mybatisplus.annotation.*; import lombok.Getter; import lombok.Setter; import java.time.*;
+@Getter @Setter @TableName("customize_answers") public class CustomizeAnswer { @TableId(type=IdType.AUTO) private Long id; private Long sessionId; private Integer days; private LocalDate departDate; private LocalDate returnDate; private String departCity; private Boolean hasBookedTransport; private Double budgetMin; private Double budgetMax; private Integer travelerCount; private String travelerComposition; private String travelStyle; private String interestTags; private String pacePreference; private String accommodationType; private String specialNeeds; private String extraAnswers; }

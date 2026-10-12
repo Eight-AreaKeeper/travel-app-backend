@@ -1,0 +1,36 @@
+version: "3.8"
+
+# Local development dependencies. Run `docker compose up -d` to start them all at once; the ports match
+# the defaults in application-dev.yml.example, so no port changes are needed.
+# On first start (empty mysql_data volume) the mysql container runs db/schema.sql and db/seed_data.sql.
+# If you already have a local MySQL with the schema from db/schema.sql, you can skip the mysql container
+# and point application-dev.yml at your local instance instead.
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: travel_app
+      MYSQL_USER: travel_app
+      MYSQL_PASSWORD: travel_app_password
+      MYSQL_ROOT_PASSWORD: travel_app_root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./db/seed_data.sql:/docker-entrypoint-initdb.d/02-seed_data.sql:ro
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management console: http://localhost:15672 (default credentials guest/guest)
+
+volumes:
+  mysql_data:
